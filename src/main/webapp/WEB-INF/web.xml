@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns="http://xmlns.jcp.org/xml/ns/javaee"
+	xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_3_1.xsd"
+	version="3.1">
+	<display-name>appcomposer-test</display-name>
+	<welcome-file-list>
+		<welcome-file>index.html</welcome-file>
+		<welcome-file>index.htm</welcome-file>
+		<welcome-file>index.jsp</welcome-file>
+		<welcome-file>default.html</welcome-file>
+		<welcome-file>default.htm</welcome-file>
+		<welcome-file>default.jsp</welcome-file>
+	</welcome-file-list>
+	<filter>
+		<filter-name>SimpleCorsFilter</filter-name>
+		<filter-class>com.test.appcomposer.filters.SimpleCorsFilter</filter-class>
+	</filter>
+	<filter-mapping>
+		<filter-name>SimpleCorsFilter</filter-name>
+		<url-pattern>/cors/*</url-pattern>
+	</filter-mapping>
+	<security-constraint>
+		<web-resource-collection>
+			<web-resource-name>Test</web-resource-name>
+			<url-pattern>/cors/test/*</url-pattern>
+		</web-resource-collection>
+		<auth-constraint>
+			<role-name>general</role-name>
+		</auth-constraint>
+	</security-constraint>
+	<security-constraint>
+		<web-resource-collection>
+			<web-resource-name>Allow options unrestricted</web-resource-name>
+			<url-pattern>/cors/test/*</url-pattern>
+			<http-method>OPTIONS</http-method>
+		</web-resource-collection>
+		<!-- this allows client to get options without security check -->
+		<!-- <auth-constraint /> -->
+	</security-constraint>
+	<security-role>
+	    <role-name>general</role-name>
+	</security-role>
+	<login-config>
+		<auth-method>KEYCLOAK</auth-method>
+		<realm-name>Test API</realm-name>
+	</login-config>
+</web-app>

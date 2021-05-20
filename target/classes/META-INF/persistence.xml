@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<persistence xmlns="http://java.sun.com/xml/ns/persistence"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://java.sun.com/xml/ns/persistence http://java.sun.com/xml/ns/persistence/persistence_2_0.xsd"
+	version="2.0">
+	<persistence-unit name="test" transaction-type="JTA">
+		<jta-data-source>test</jta-data-source>
+		<non-jta-data-source>testUnmanaged</non-jta-data-source>
+		<class>com.test.appcomposer.entities.jpa.Test</class>		
+		<exclude-unlisted-classes>true</exclude-unlisted-classes>
+		<properties>
+			<property name="openjpa.jdbc.SynchronizeMappings"
+				value="buildSchema(ForeignKeys=true)" />
+			<property name="openjpa.BrokerImpl"
+				value="allowReferenceToSiblingContext=true" />
+			<property name="openjpa.Sequence"
+				value="class-table(Table=SEQUENCES, Increment=20, InitialValue=2000000)" />
+			<!-- <property name="openjpa.DataCache" value="true"/>
+			<property name="openjpa.RemoteCommitProvider" value="sjvm"/> -->
+			<!-- <property name="openjpa.Log" value="DefaultLevel=WARN, Runtime=INFO, Tool=INFO, SQL=TRACE"/> -->
+		</properties>
+	</persistence-unit>
+</persistence>

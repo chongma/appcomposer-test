@@ -1,0 +1,10 @@
+{
+  "realm": "homeconvey-production",
+  "auth-server-url": "https://securetest.homeconvey.com/auth",
+  "ssl-required": "none",
+  "resource": "conveyancingtracker-local",
+  "credentials": {
+    "secret": "5ae39e95-b6b5-4512-96fb-f553c4d8e8e8"
+  },
+  "confidential-port": 0
+}
