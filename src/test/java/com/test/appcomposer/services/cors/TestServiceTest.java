@@ -5,8 +5,6 @@ import static org.junit.Assert.assertEquals;
 import java.io.IOException;
 import java.util.Properties;
 
-import javax.naming.NamingException;
-
 import org.apache.cxf.jaxrs.client.WebClient;
 import org.apache.openejb.core.security.SecurityServiceImpl;
 import org.apache.openejb.jee.WebApp;
@@ -32,14 +30,6 @@ import com.test.appcomposer.producers.EntityManagerProducer;
 @Descriptors(@Descriptor(name = "persistence.xml", path = "META-INF/persistence.xml"))
 public class TestServiceTest {
 
-//	@Module
-//	public EnterpriseBean bean() {
-//		return new SingletonBean(IsCallerInRoleBean.class).localBean();
-//	}
-
-//	@EJB
-//	private IsCallerInRoleBean bean;
-
 	@Component
 	public SecurityService<?> serviceService() {
 		return new SecurityServiceImpl() {
@@ -51,11 +41,9 @@ public class TestServiceTest {
 	}
 
 	@Configuration
-	public Properties config() throws NamingException {
-		Properties p = new PropertiesBuilder().p("db", "new://Resource?type=DataSource")
+	public Properties config() {
+		return new PropertiesBuilder().p("db", "new://Resource?type=DataSource")
 				.p("db.JdbcUrld", "jdbc:hsqldb:mem:test").p("cxf-rs.auth", "BASIC").build();
-//		Context context = new InitialContext(p);
-		return p;
 	}
 
 	@Module
@@ -65,39 +53,11 @@ public class TestServiceTest {
 		return new WebApp().contextRoot("/");
 	}
 
-//	@Test
-//	public void isLogged() throws LoginException {
-//		final ThreadContext testContext = ThreadContext.getThreadContext();
-//		testContext.set(AbstractSecurityService.SecurityContext.class, null);
-//
-//		final SecurityService securityService = SystemInstance.get().getComponent(SecurityService.class);
-//		final Object id = securityService.login("testgeneral", "password");
-//		securityService.associate(id);
-//
-//		assertTrue(bean.isinRole("general"));
-//		assertFalse(bean.isinRole("whatever"));
-//
-//		securityService.disassociate();
-//		securityService.logout(id);
-//
-//		ThreadContext.enter(testContext);
-//	}
-
 	@Test
 	public void testSelectHello() throws IOException {
 		final String message = WebClient.create("http://localhost:4204", "testgeneral", "password", null)
 				.path("/cors/test/hello").get(String.class);
 		assertEquals("Hello world 2", message);
 	}
-
-//	@Singleton
-//	public static class IsCallerInRoleBean {
-//		@Resource
-//		private SessionContext ctx;
-//
-//		public boolean isinRole(final String role) {
-//			return ctx.isCallerInRole(role);
-//		}
-//	}
 
 }
