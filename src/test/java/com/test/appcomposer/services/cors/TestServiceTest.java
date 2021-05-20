@@ -8,9 +8,12 @@ import java.util.Properties;
 import javax.naming.NamingException;
 
 import org.apache.cxf.jaxrs.client.WebClient;
+import org.apache.openejb.core.security.SecurityServiceImpl;
 import org.apache.openejb.jee.WebApp;
 import org.apache.openejb.junit.ApplicationComposer;
+import org.apache.openejb.spi.SecurityService;
 import org.apache.openejb.testing.Classes;
+import org.apache.openejb.testing.Component;
 import org.apache.openejb.testing.Configuration;
 import org.apache.openejb.testing.Descriptor;
 import org.apache.openejb.testing.Descriptors;
@@ -23,8 +26,6 @@ import org.junit.runner.RunWith;
 import com.test.appcomposer.controllers.TestController;
 import com.test.appcomposer.db.TestDb;
 import com.test.appcomposer.producers.EntityManagerProducer;
-import com.test.appcomposer.services.cors.ApplicationConfig;
-import com.test.appcomposer.services.cors.TestService;
 
 @EnableServices(value = "jaxrs")
 @RunWith(ApplicationComposer.class)
@@ -39,10 +40,20 @@ public class TestServiceTest {
 //	@EJB
 //	private IsCallerInRoleBean bean;
 
+	@Component
+	public SecurityService<?> serviceService() {
+		return new SecurityServiceImpl() {
+			@Override
+			public boolean isCallerInRole(final String role) {
+				return super.isCallerInRole(role) || "general".equals(role);
+			}
+		};
+	}
+
 	@Configuration
 	public Properties config() throws NamingException {
 		Properties p = new PropertiesBuilder().p("db", "new://Resource?type=DataSource")
-				.p("db.JdbcUrld", "jdbc:hsqldb:mem:test").build();
+				.p("db.JdbcUrld", "jdbc:hsqldb:mem:test").p("cxf-rs.auth", "BASIC").build();
 //		Context context = new InitialContext(p);
 		return p;
 	}
@@ -51,10 +62,6 @@ public class TestServiceTest {
 	@Classes(cdi = true, value = { ApplicationConfig.class, TestService.class, TestController.class, TestDb.class,
 			EntityManagerProducer.class })
 	public WebApp app() {
-//		SecurityConstraint sc =new SecurityConstraint();
-//		AuthConstraint ac = new AuthConstraint();
-//		ac.se
-//		sc.setAuthConstraint(ac);
 		return new WebApp().contextRoot("/");
 	}
 
