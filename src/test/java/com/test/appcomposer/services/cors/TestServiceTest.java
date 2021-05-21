@@ -8,58 +8,38 @@ import java.io.IOException;
 import javax.ws.rs.NotAuthorizedException;
 
 import org.apache.cxf.jaxrs.client.WebClient;
-import org.apache.openejb.core.security.SecurityServiceImpl;
-import org.apache.openejb.jee.WebApp;
-import org.apache.openejb.spi.SecurityService;
-import org.apache.openejb.testing.Component;
-import org.apache.openejb.testing.Module;
+import org.apache.openejb.testing.Application;
 import org.apache.openejb.testing.SingleApplicationComposerRunner;
+import org.junit.After;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-//@EnableServices(value = "jaxrs")
-//@RunWith(ApplicationComposer.class)
-//@Descriptors(@Descriptor(name = "persistence.xml", path = "META-INF/persistence.xml"))
+import com.test.appcomposer.AppDescriptor;
+
 @RunWith(SingleApplicationComposerRunner.class)
 public class TestServiceTest {
 
-	public String someRole;
+	@Application
+	private AppDescriptor descriptor;
 
-	@Component
-	public SecurityService<?> serviceService() {
-		return new SecurityServiceImpl() {
-			@Override
-			public boolean isCallerInRole(final String role) {
-				return super.isCallerInRole(role) || someRole.equals(role);
-			}
-		};
-	}
-
-//	@Configuration
-//	public Properties config() {
-//		return new PropertiesBuilder().p("db", "new://Resource?type=DataSource")
-//				.p("db.JdbcUrld", "jdbc:hsqldb:mem:test").p("cxf-rs.auth", "BASIC").build();
-//	}
-
-	@Module
-//	@Classes(cdi = true, value = { ApplicationConfig.class, TestService.class, TestController.class, TestDb.class,
-//			EntityManagerProducer.class })
-	public WebApp app() {
-		return new WebApp().contextRoot("/");
+	@After
+	public void resetRole() {
+		descriptor.setSomeRole(null);
 	}
 
 	@Test
 	public void testSelectHello() throws IOException {
-		someRole = "general";
-		final String message = WebClient.create("http://localhost:4204").path("/cors/test/hello").get(String.class);
+		descriptor.setSomeRole("general");
+		final String message = WebClient.create(descriptor.getBase().toExternalForm()).path("/cors/test/hello")
+				.get(String.class);
 		assertEquals("Hello world 2", message);
 	}
 
 	@Test
 	public void testSelectHello2() throws IOException {
-		someRole = "client";
-		assertThrows(NotAuthorizedException.class,
-				() -> WebClient.create("http://localhost:4204").path("/cors/test/hello").get(String.class));
+		descriptor.setSomeRole("client");
+		assertThrows(NotAuthorizedException.class, () -> WebClient.create(descriptor.getBase().toExternalForm())
+				.path("/cors/test/hello").get(String.class));
 	}
 
 }
