@@ -10,6 +10,6 @@ import javax.ws.rs.core.Application;
 @ApplicationPath("/cors")
 public class ApplicationConfig extends Application {
 	public Set<Class<?>> getClasses() {
-		return new HashSet<Class<?>>(Arrays.asList(TestService.class));
+		return new HashSet<Class<?>>(Arrays.asList(TestService.class, Test2Service.class));
 	}
 }

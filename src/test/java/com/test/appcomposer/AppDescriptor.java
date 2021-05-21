@@ -1,6 +1,7 @@
 package com.test.appcomposer;
 
 import java.net.URL;
+import java.util.Objects;
 
 import org.apache.openejb.api.configuration.PersistenceUnitDefinition;
 import org.apache.openejb.core.security.SecurityServiceImpl;
@@ -16,18 +17,11 @@ import org.apache.openejb.testing.EnableServices;
 import org.apache.openejb.testing.RandomPort;
 import org.apache.openejb.testing.SimpleLog;
 
-import com.test.appcomposer.controllers.TestController;
-import com.test.appcomposer.db.TestDb;
-import com.test.appcomposer.producers.EntityManagerProducer;
-import com.test.appcomposer.services.cors.ApplicationConfig;
-import com.test.appcomposer.services.cors.TestService;
-
 @Default
 @SimpleLog
 @PersistenceUnitDefinition
 @EnableServices(jaxrs = true)
-@Classes(cdi = true, context = "/", value = { ApplicationConfig.class, TestService.class, TestController.class,
-		TestDb.class, EntityManagerProducer.class })
+@Classes(cdi = true, context = "/")
 @Application
 @ContainerProperties({ @ContainerProperties.Property(name = "test", value = "new://Resource?type=DataSource"),
 		@ContainerProperties.Property(name = "test.JdbcUrl", value = "jdbc:hsqldb:mem:test"),
@@ -52,7 +46,7 @@ public class AppDescriptor {
 		return new SecurityServiceImpl() {
 			@Override
 			public boolean isCallerInRole(final String role) {
-				return super.isCallerInRole(role) || someRole.equals(role);
+				return super.isCallerInRole(role) || Objects.equals(someRole, role);
 			}
 		};
 	}
